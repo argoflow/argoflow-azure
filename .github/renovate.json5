@@ -1,0 +1,116 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    //"schedule:daily",
+    ":dependencyDashboard",
+    ":prHourlyLimitNone"
+  ],
+  "schedule": [
+    "before 11pm"
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": true
+    },
+    {
+      "description": "Group Cert Manager Update",
+      "matchPackagePatterns": ["^.*cert-manager.*"],
+      "groupName": "cert-manager",
+      "additionalBranchPrefix": ""
+    },
+    {
+      "description": "Group Argo CD Update",
+      "matchPackagePatterns": ["^.*argo[-]?cd.*"],
+      "groupName": "argo-cd",
+      "additionalBranchPrefix": ""
+    },
+    {
+      "description": "Rook Ceph Update",
+      "matchPackagePatterns": ["^.*rook\/(rook|ceph)"],
+      "groupName": "rook-ceph",
+      "additionalBranchPrefix": ""
+    },
+    {
+      "description": "Group Kubeflow Pipelines update",
+      "matchPackagePatterns": ["^(kubeflow|gcr.io)\/(ml-|tfx-oss-public\/ml_metadata_store_server)?(pipeline)?.*"],
+      "groupName": "kubeflow-pipelines",
+      "additionalBranchPrefix": ""
+    },
+    //{
+    //  "matchDatasources": [
+    //    "docker"
+    //  ],
+    //  "enabled": true,
+    //  "pinDigests": true
+    //},
+    //{
+    //  "matchDatasources": [
+    //    "github-releases",
+    //    "github-tags"
+    //  ],
+    //  "pinDigests": true,
+    //  "digest": {
+    //    "enabled": true,
+    //    "automerge": false
+    //},
+    //},
+    { // major updates do not create PRs automatically
+      "updateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+    }
+  ],
+  "separateMinorPatch": true,
+  "kustomize": {
+    "enabled": true,
+  },
+  // Update Argo CD application specs
+  "argocd": {
+      "fileMatch": ["argocd-applications/.+\\.yaml$"]
+  },
+  "regexManagers": [
+    {
+      "fileMatch": ["(^|/)kustomization.yaml$"],
+      "matchStrings": [
+          "- github\\.com\\/(?<depName>[^/]+?\\/[^/]*?)\\/.*\\?ref=(?<currentDigest>[a-f0-9]{40}) # tag=(?<currentValue>.*)"
+        ],
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "fileMatch": ["(^|/)kustomization.yaml$"],
+      "matchStrings": [
+          "- https:\/\/github\.com\/(?<depName>[^\/]+?\/[^\/]*?)\/releases\/download\/(?<currentValue>.*)\/.*.yaml"
+        ],
+      "datasourceTemplate": "github-tags"
+    },
+    {
+      "fileMatch": ["(^|/)kustomization.yaml$"],
+      "matchStrings": [
+          "- https:\/\/.*github.*\.com\/(?<depName>[^\/]+?\/[^\/]*?)\/(?<currentValue>.{6})\/.*.yaml"
+        ],
+      "datasourceTemplate": "github-tags"
+    },
+    // Update ceph/ceph image in Rook Cluster CR patch
+    {
+      "fileMatch": ["(^|/)cluster-patch.yaml$"],
+      "matchStrings": [
+          "image: (?<depName>[^\/]+?\/[^\/]*?)\:(?<currentValue>.*)"
+        ],
+      "datasourceTemplate": "docker"
+    },
+    // Update Istio CR and operator
+    {
+      "fileMatch": ["(^|/)istio-(spec|operator).yaml$"],
+      "matchStrings": [
+          "(tag:|value:) (?<currentValue>.*) # (?<depName>.*)"
+        ],
+      "datasourceTemplate": "docker"
+    }
+  ]
+}
