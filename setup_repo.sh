@@ -12,9 +12,6 @@ do
   grep -rli ${PLACEHOLDER} ${DISTRIBUTION_PATH}/* | xargs -i@ sed -i "s/${PLACEHOLDER}/${VALUE}/g" @ #perform recursive replace
 done <${SETUP_CONF_PATH} # pass the setup config into the while loop
 
-# Create metallb secret
-kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/metallb/secret.yaml
-
 # Auth setup
 
 COOKIE_SECRET=$(python3 -c 'import os,base64; print(base64.urlsafe_b64encode(os.urandom(16)).decode())')
@@ -38,7 +35,7 @@ read -p 'First name (for Kubeflow account): ' FIRSTNAME
 read -p 'Last name (for Kubeflow account): ' LASTNAME
 read -p 'Password (for Kubeflow login): ' ADMIN_PASS
 
-ADMIN_PASS_DEX=$(python3 -c "from passlib.hash import bcrypt; import secrets; print(bcrypt.using(rounds=12, ident='2y').hash(\"${ADMIN_PASS}\"))")
+ADMIN_PASS_DEX=$(python3 -c "from passlib.hash import bcrypt; print(bcrypt.using(rounds=12, ident='2y').hash(\"${ADMIN_PASS}\"))")
 
 yq eval -i ".data.ADMIN = \"${EMAIL}\"" ${DISTRIBUTION_PATH}/kubeflow/notebooks/profile-controller_access-management/patch-admin.yaml
 
@@ -62,7 +59,7 @@ select yn in "Yes" "No"; do
           read -p 'OIDC Client Secret: ' OIDC_CLIENT_SECRET_INPUT
           kubectl create secret generic -n auth oauth2-proxy --from-literal=client-id=${OIDC_CLIENT_ID_INPUT} --from-literal=client-secret=${OIDC_CLIENT_SECRET_INPUT} --from-literal=cookie-secret=${COOKIE_SECRET} --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/oidc-auth/base/oauth2-proxy-secret.yaml
           break;;
-        No ) exit;;
+        No ) break;;
     esac
 done
 
@@ -76,7 +73,7 @@ select yn in "Yes" "No"; do
           kubectl create secret generic -n cert-manager cloudflare-api-token-secret --from-literal=api-token=${CLOUDFLARE_API_TOKEN} --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/cloudflare-secrets/cloudflare-api-token-secret-cert-manager.yaml
           kubectl create secret generic -n kube-system cloudflare-api-token-secret --from-literal=api-token=${CLOUDFLARE_API_TOKEN} --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/cloudflare-secrets/cloudflare-api-token-secret-external-dns.yaml
           break;;
-        No ) exit;;
+        No ) break;;
     esac
 done
 
@@ -90,6 +87,6 @@ select yn in "Yes" "No"; do
           read -p 'Repository HTTPS Password: ' REPO_HTTPS_PASSWORD
           kubectl create secret generic -n argocd git-repo-secret --from-literal=HTTPS_USERNAME=${REPO_HTTPS_USERNAME} --from-literal=HTTPS_PASSWORD=${REPO_HTTPS_PASSWORD} --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/argocd/overlays/private-repo/secret.yaml
           break;;
-        No ) exit;;
+        No ) break;;
     esac
 done
