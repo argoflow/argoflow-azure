@@ -57,3 +57,5 @@ spec:
         value: profile
       - name: extraArgs.scope
         value: openid
+      - name: extraArgs.ssl-insecure-skip-verify
+        value: "true"
