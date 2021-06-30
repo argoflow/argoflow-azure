@@ -178,7 +178,7 @@ deploy-metallb:
 	METALLB_CLASS=$$(echo $$METALLB_RANGE | sed 's/^ *- *//' | awk -F '.' '{printf("%d.%d", $$1, $$2) }'); \
 	kustomize build kind/metallb | sed "s/$$METALLB_CLASS/$$SUBCLASS/g" | kubectl apply -f -
 
-deploy: kind build $(SECRETS) gitserver deploy-argocd deploy-kubeflow
+deploy: kind build $(SECRETS) gitserver deploy-argocd deploy-kubeflow deploy-metallb
 
 chromium:
 	$(CHROMIUM) --host-rules="MAP *.aaw.cloud.statcan.ca $$(kubectl get svc -n istio-system istio-ingressgateway -o json | jq -r '.status | .. | .ip? // empty')" &
