@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitserver
+  namespace: git
+  labels:
+    app: gitserver
+spec:
+  selector:
+    matchLabels:
+      app: gitserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gitserver
+    spec:
+      containers:
+      - name: gitserver
+        image: gitserver:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
