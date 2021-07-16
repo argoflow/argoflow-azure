@@ -13,10 +13,10 @@ spec:
   - to:
     - operation:
         hosts:
-        - "$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_DOMAIN"
-        - "$ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN" # needed for redirect after authentication
-        - "$ARGOFLOW_SUBDOMAIN_SERVING.$ARGOFLOW_DOMAIN" # needed for redirect after authentication
-        - "*.$ARGOFLOW_SUBDOMAIN_SERVING.$ARGOFLOW_DOMAIN" # needed for redirect after authentication
+        - "<< domain.auth >>.<< domain.root >>"
+        - "<< domain.dashboard >>.<< domain.root >>" # needed for redirect after authentication
+        - "<< domain.serving >>.<< domain.root >>" # needed for redirect after authentication
+        - "*.<< domain.serving >>.<< domain.root >>" # needed for redirect after authentication
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  repositories: |
+    - url: http://gitserver.git/argoflow-azure.git
+      passwordSecret:
+        name: git-repo-secret
+        key: HTTPS_PASSWORD
+      usernameSecret:
+        name: git-repo-secret
+        key: HTTPS_USERNAME

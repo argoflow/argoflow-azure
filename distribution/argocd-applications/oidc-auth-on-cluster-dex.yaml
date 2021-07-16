@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oidc-auth
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: http://gitserver.git/argoflow-azure.git
+    targetRevision: master
+    path: distribution/oidc-auth/overlays/dex
+    kustomize:
+      version: v4.0.5
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: auth
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

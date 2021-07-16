@@ -9,7 +9,7 @@ spec:
   gateways:
   - auth-gateway
   hosts:
-  - $ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_DOMAIN
+  - << domain.auth >>.<< domain.root >>
   http:
   - route:
     - destination:

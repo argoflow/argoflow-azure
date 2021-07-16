@@ -40,21 +40,21 @@ spec:
       - name: extraArgs.skip-provider-button
         value: "true"
       - name: extraArgs.cookie-domain
-        value: .$ARGOFLOW_DOMAIN
+        value: .<< domain.root >>
       - name: extraArgs.whitelist-domain
-        value: .$ARGOFLOW_DOMAIN
+        value: .<< domain.root >>
       - name: extraArgs.oidc-issuer-url
-        value: $ARGOFLOW_OIDC_ISSUER
+        value: << domain.auth >>.<< domain.root >>
       # - name: extraArgs.login-url
-      #   value: "https://$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/auth"
+      #   value: "https://<< domain.auth >>.<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/auth"
       # - name: extraArgs.oidc-jwks-url
-      #   value: "https://$ARGOFLOW_OIDC_ISSUER/keys"
+      #   value: "https://<< domain.auth >>.<< domain.root >>/keys"
       # - name: extraArgs.redeem-url
-      #   value: "https://$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/token"
+      #   value: "https://<< domain.auth >>.<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/token"
       # - name: extraArgs.profile-url
-      #   value: "https://$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/userinfo"
+      #   value: "https://<< domain.auth >>.<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/userinfo"
       # - name: extraArgs.validate-url
-      #   value: "https://$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_OIDC_ISSUER.nl/auth/realms/kubeflow/protocol/openid-connect/userinfo"
+      #   value: "https://<< domain.auth >>.<< domain.auth >>.<< domain.root >>.nl/auth/realms/kubeflow/protocol/openid-connect/userinfo"
       # - name: extraArgs.scope
       #   value: email
       # - name: extraArgs.scope

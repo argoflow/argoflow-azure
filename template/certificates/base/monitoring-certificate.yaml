@@ -9,6 +9,6 @@ spec:
     name: gateways-issuer
     kind: ClusterIssuer
   dnsNames:
-    - $ARGOFLOW_SUBDOMAIN_GRAFANA.$ARGOFLOW_DOMAIN
-    - $ARGOFLOW_SUBDOMAIN_KIALI.$ARGOFLOW_DOMAIN
-    - $ARGOFLOW_SUBDOMAIN_KUBECOST.$ARGOFLOW_DOMAIN
+    - << domain.grafana >>.<< domain.root >>
+    - << domain.kiali >>.<< domain.root >>
+    - << domain.kubecost >>.<< domain.root >>

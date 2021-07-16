@@ -2,7 +2,6 @@
 
 # Jump to "VARS" to do actual configuration
 
-import argparse
 import base64
 import getpass
 import json
@@ -12,22 +11,28 @@ import sys
 from argparse import ArgumentParser, Namespace
 from enum import Enum
 from os import environ, makedirs, urandom
-from os.path import dirname, exists
+from os.path import dirname, exists, join, abspath
 from subprocess import PIPE, STDOUT, Popen
 from typing import Dict, List, Optional, Union
 
+import jinja2
 import yaml
 from dotenv import dotenv_values
+from jinja2 import FileSystemLoader, Template, StrictUndefined
 from passlib.hash import bcrypt
 from pydantic import BaseModel, BaseSettings
 
 # For Pydantic parsing
 ENV_PREFIX = 'ARGOFLOW_'
-TEMPLATE = '../template/'
-
-
+DISTRIBUTION = abspath('../distribution/')
 
 ### Helpers
+jinja_env = jinja2.Environment(
+    loader=FileSystemLoader(DISTRIBUTION),
+    variable_start_string='<<',
+    variable_end_string='>>',
+    undefined=StrictUndefined
+)
 
 def rand_hex(length: int):
     return base64.urlsafe_b64encode(urandom(length)).decode()
@@ -38,10 +43,31 @@ def rand_base64(length: int):
 def kubectl_yaml(args: List[str]):
     """ Call kubectl subprocess """
     return subprocess.run(
-        ['kubectl', 'create', '--dry-run=client', '-o', 'yaml'] + args, 
+        ['kubectl', 'create', '--dry-run=client', '-o', 'yaml'] + args,
         stdout=subprocess.PIPE
     ).stdout.decode('utf-8')
 
+def templatify(source: str, dest: Optional[str], variables: Dict) -> Optional[str]:
+    if dest is not None:
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+
+    try:
+        template = jinja_env.get_template(source)
+        s = template.render(**variables)
+    except Exception as e:
+        with open(join(DISTRIBUTION,source)) as f:
+            print('# ######################')
+            print('# Error processing file:')
+            print('# ######################')
+            print(f.read())
+        raise e
+
+    if dest is None:
+        return s
+
+    with open(destination, 'w') as f:
+        print(f"# Wrote {destination}", file=sys.stderr)
+        f.write(s)
 
 def write(text: str, dest: Optional[str], overwrite: bool = False) -> None:
     """ A write function that ensures folder exists """
@@ -60,6 +86,22 @@ def write(text: str, dest: Optional[str], overwrite: bool = False) -> None:
 
     with open(dest, 'w') as f:
         f.write(text)
+
+# https://stackoverflow.com/a/287944
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+
+
 
 ### end of helpers
 
@@ -87,6 +129,14 @@ class ArgoflowSettings(BaseSettings):
         """ A method that uses user interaction to get values """
         raise NotImplementedError
 
+    # We named the variables ALL_CAPS,
+    # but lets support lower case, too
+    def __getattribute__(self, name):
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            return object.__getattribute__(self, name.upper())
+
 
 class Secret(BaseModel):
     name: str
@@ -95,7 +145,7 @@ class Secret(BaseModel):
     filename: Optional[str]
 
     def __str__(self):
-        """ Create the Kubernetes Secret yaml """
+        """ Create the Kubernetes Secret yaml. """
         # If the data is a dict, then easy-peasy
         if type(self.data) is dict:
             return kubectl_yaml(
@@ -115,15 +165,33 @@ class Secret(BaseModel):
                 'kubectl', 'create', '--dry-run=client', '-o', 'yaml',
                 'secret', 'generic', '-n', self.namespace, self.name,
                 f'--from-file={self.filename}=/dev/stdin'
-            ], 
+            ],
             stdout=PIPE, stdin=PIPE, stderr=STDOUT
         )
         output = secret_yaml.communicate(input=self.data.encode('utf-8'))[0]
         return output.decode()
 
     # Just an alias to str
-    def yaml(self):
-        return str(self)
+    def yaml(self, raw=False, ignore_errors=False):
+        """ If raw is True, render the secrets as-is, not base64 encoded. """
+        output = str(self)
+        if raw is True:
+            if type(self.data) is str:
+                to_replace = [self.data]
+            elif type(self.data) is dict:
+                to_replace = self.data.values()
+            else:
+                raise Exception("data should be dict or str")
+            # Replace all base64'd variables with the originals
+            # This is for things like the vault argocd plugin, where the
+            # value in the yamls should be <path-to-secret>,
+            # not `base64("<path-to-secret>")`
+            for v in to_replace:
+                b64 = base64.b64encode(bytes(v, 'utf-8')).decode('utf-8')
+                print(f'{v} -> {b64}')
+                output = output.replace(b64, v)
+
+        return output
 
     def kubeseal(self):
         """ Run Kubeseal on the text. (Requires kubeseal) """
@@ -187,14 +255,35 @@ class OAuth(ArgoflowSettings):
             OIDC_CLIENT_SECRET = getpass.getpass(prompt="OIDC Client Secret: ")
         )
 
+# keycloak
 class Keycloak(ArgoflowSettings):
     DATABASE_PASS: str = rand_hex(16)
     POSTGRESQL_PASS: str = rand_hex(16)
     KEYCLOAK_ADMIN_PASS: str = rand_hex(16)
     KEYCLOAK_MANAGEMENT_PASS: str = rand_hex(16)
 
+class RealmTemplate(ArgoflowSettings):
+    KUBEFLOW_REALM: str
 
-class Dex(ArgoflowSettings):
+    @classmethod
+    def from_oidc(cls, profile: KubeflowProfile, oidc: OAuth):
+        path = join(
+            'oidc-auth',
+            'overlays',
+            'keycloak',
+            'kubeflow-realm-template.json'
+        )
+
+        templated = templatify(source=path, dest=None, variables={
+            'profile': profile,
+            'oidc': oidc
+        })
+
+        return cls(KUBEFLOW_REALM=templated)
+
+
+# dex
+class DexValues(ArgoflowSettings):
     ADMIN_PASS: str
     ADMIN_PASS_DEX: str
 
@@ -203,6 +292,27 @@ class Dex(ArgoflowSettings):
         dex_secret = bcrypt.using(rounds=12, ident='2y').hash(profile.PASSWORD)
         return cls(ADMIN_PASS=profile.PASSWORD, ADMIN_PASS_DEX=dex_secret)
 
+class Dex(ArgoflowSettings):
+    DEX_CONFIG: str
+
+    @classmethod
+    def from_values(cls, profile: KubeflowProfile, oidc: OAuth, dex: DexValues):
+        path = join(
+            'oidc-auth',
+            'overlays',
+            'dex',
+            'dex-config-template.yaml'
+        )
+
+        templated = templatify(source=path, dest=None, variables={
+            'profile': profile,
+            'dex': dex,
+            'oidc': oidc
+        })
+
+        return cls(DEX_CONFIG=templated)
+
+# end of dex
 
 class CloudFlare(ArgoflowSettings):
     CLOUDFLARE_API_TOKEN: str
@@ -241,7 +351,7 @@ def parse() -> Namespace:
         'secret_type',
         choices=['raw', 'generated', 'vault', 'sealed'],
         help="""Choose which type of secret to generate.
-        
+
         'raw' just prints the variables themselves, so you can use
         raw, then copy-paste the values into vault, and re-run
         this program with `vault` to reference the values.
@@ -299,9 +409,9 @@ def parse() -> Namespace:
 
 
 def setup_oauth(
-        oauth_type:str, 
-        profile: KubeflowProfile, 
-        vars: Dict, 
+        oauth_type:str,
+        profile: KubeflowProfile,
+        vars: Dict,
         files: Dict
     ) -> None:
 
@@ -315,6 +425,12 @@ def setup_oauth(
 if __name__ == '__main__':
 
     args = parse()
+
+    if not exists(DISTRIBUTION):
+        fail = lambda s: bcolors.FAIL + s + bcolors.ENDC
+        print(fail(f'Distribtion folder "{DISTRIBUTION}" does not exist'), file=sys.stderr)
+        print(fail(f'Run argoflow.py first. Exiting.'), file=sys.stderr)
+        sys.exit(1)
 
     if args.env_file is not None:
         config = dotenv_values(args.env_file)
@@ -376,43 +492,45 @@ if __name__ == '__main__':
         ###########
         ### DEX
         ###########
-        with open(f"{TEMPLATE}/{oidc_dest}/dex-config-template.yaml", 'r') as f:
-            d = yaml.safe_load(f)
+        try:
+            vars['dex'] = Dex()
+        except:
+            try:
+                dex_values = DexValues()
+            except:
+                dex_values = DexValues.from_profile(profile=vars['profile'])
 
-        vars['dex'] = Dex.from_profile(profile=vars['profile'])
-
-        d['staticClients'][0]['id'] = vars['oidc'].OIDC_CLIENT_ID
-        d['staticClients'][0]['secret'] = vars['oidc'].OIDC_CLIENT_SECRET
-        d['staticPasswords'][0]['username'] = vars['profile'].USERNAME
-        d['staticPasswords'][0]['email'] = vars['profile'].EMAIL
-        d['staticPasswords'][0]['hash'] = vars['dex'].ADMIN_PASS_DEX
+            vars['dex'] = Dex.from_values(
+                profile=vars['profile'],
+                oidc=vars['oidc'],
+                dex=dex_values
+            )
 
         files[f'{oidc_dest}/dex-config-secret.yaml'] = Secret(
             name='dex-config',
             namespace='auth',
-            data=yaml.dump(d),
+            data=vars['dex'].DEX_CONFIG,
             filename='config.yaml'
         )
-        
+
     elif args.oauth_type == 'keycloak':
         ###########
         ### Keycloak
         ###########
-        with open(f"{TEMPLATE}/{oidc_dest}/kubeflow-realm-template.json", 'r') as f:
-            d = json.load(f)
 
-        d['users'][0]['email'] = vars['profile'].EMAIL
-        d['users'][0]['username'] = vars['profile'].USERNAME
-        d['users'][0]['firstName'] = vars['profile'].FIRSTNAME
-        d['users'][0]['lastName'] = vars['profile'].LASTNAME
-        d['users'][0]['credentials'][0]['value'] = vars['profile'].PASSWORD
-        d['clients'][0]['clientId'] = vars['oidc'].OIDC_CLIENT_ID
-        d['clients'][0]['secret'] = vars['oidc'].OIDC_CLIENT_SECRET
+        try:
+            # Try reading from env-var
+            vars['kubeflow-realm'] = RealmTemplate()
+        except:
+            vars['kubeflow-realm'] = RealmTemplate.from_oidc(
+                profile=vars['profile'],
+                oidc=vars['oidc']
+            )
 
         files[f'{oidc_dest}/kubeflow-realm-secret.yaml'] = Secret(
             name='kubeflow-realm',
             namespace='auth',
-            data=json.dumps(d),
+            data=vars['kubeflow-realm'].KUBEFLOW_REALM,
             filename='kubeflow-realm.json'
         )
 
@@ -486,7 +604,7 @@ if __name__ == '__main__':
             # No env var found
             vars['cloudflare'] = CloudFlare.user_entered()
 
-        
+
         files['cloudflare-secrets/cloudflare-api-token-secret-cert-manager.yaml'] = Secret(
             name='cloudflare-api-token-secret',
             namespace='cert-manager',
@@ -521,7 +639,7 @@ if __name__ == '__main__':
             d = dict(v)
             for k in schema:
                 env_var = schema[k]
-                val = d[k]
+                val = d[k].replace('\n','\\n')
                 print(f'{env_var}="{val}"')
 
         # done!
@@ -529,20 +647,22 @@ if __name__ == '__main__':
 
     # Save everything!
     if args.secret_type == 'vault':
-        for v in vars.values():
-            for val in dict(v).values():
-                if not val.startswith('<') or not val.endswith('>'):
-                    print("# This looks like a real secret, not a reference", file=sys.stderr)
-                    raise ValueError('Vault secret references should look like <path>')
 
-    for (file, secret) in files.items():            
+        for v in vars.values():
+            for (k,val) in v.dict().items():
+                if not val.startswith('<') or not val.endswith('>'):
+                    print(f"# {k} looks like a real secret, not a reference", file=sys.stderr)
+                    print(f'{k} -> {v}', file=sys.stderr)
+                    raise ValueError(f'Vault secret {k} should look like <path>')
+
+    for (file, secret) in files.items():
         if args.secret_type == 'generated':
             data = secret.yaml()
         elif args.secret_type == 'sealed':
             data = secret.kubeseal()
         elif args.secret_type == 'vault':
             # Don't accidentally commit secrets...
-            data = secret.yaml()
+            data = secret.yaml(raw=True)
         else:
             raise Exception('This should be impossible.')
 

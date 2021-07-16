@@ -17,5 +17,5 @@ spec:
   - to:
     - operation:
         hosts:
-        - $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
-        - $ARGOFLOW_SUBDOMAIN_SERVING.$ARGOFLOW_DOMAIN
+        - << domain.dashboard >>.<< domain.root >>
+        - << domain.serving >>.<< domain.root >>

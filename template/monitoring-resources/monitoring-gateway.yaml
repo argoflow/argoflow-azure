@@ -8,9 +8,9 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
-    - $ARGOFLOW_SUBDOMAIN_GRAFANA.$ARGOFLOW_DOMAIN
-    - $ARGOFLOW_SUBDOMAIN_KIALI.$ARGOFLOW_DOMAIN
-    - $ARGOFLOW_SUBDOMAIN_KUBECOST.$ARGOFLOW_DOMAIN
+    - << domain.grafana >>.<< domain.root >>
+    - << domain.kiali >>.<< domain.root >>
+    - << domain.kubecost >>.<< domain.root >>
     port:
       name: http
       number: 80
@@ -19,9 +19,9 @@ spec:
     tls:
       httpsRedirect: true
   - hosts:
-    - $ARGOFLOW_SUBDOMAIN_GRAFANA.$ARGOFLOW_DOMAIN
-    - $ARGOFLOW_SUBDOMAIN_KIALI.$ARGOFLOW_DOMAIN
-    - $ARGOFLOW_SUBDOMAIN_KUBECOST.$ARGOFLOW_DOMAIN
+    - << domain.grafana >>.<< domain.root >>
+    - << domain.kiali >>.<< domain.root >>
+    - << domain.kubecost >>.<< domain.root >>
     port:
       name: https
       number: 443

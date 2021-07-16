@@ -7,7 +7,7 @@ spec:
   gateways:
   - monitoring-gateway
   hosts:
-  - $ARGOFLOW_SUBDOMAIN_GRAFANA.$ARGOFLOW_DOMAIN
+  - << domain.grafana >>.<< domain.root >>
   http:
   - route:
     - destination:

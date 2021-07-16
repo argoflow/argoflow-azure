@@ -40,16 +40,16 @@ spec:
       - name: extraArgs.skip-provider-button
         value: "true"
       - name: extraArgs.cookie-domain
-        value: .$ARGOFLOW_DOMAIN
+        value: .<< domain.root >>
       - name: extraArgs.whitelist-domain
-        value: .$ARGOFLOW_DOMAIN
+        value: .<< domain.root >>
       - name: extraArgs.oidc-issuer-url
-        value: $ARGOFLOW_OIDC_ISSUER
+        value: << domain.auth >>.<< domain.root >>
       - name: extraArgs.login-url
-        value: "$ARGOFLOW_OIDC_ISSUER/auth"
+        value: "<< domain.auth >>.<< domain.root >>/auth"
       - name: extraArgs.oidc-jwks-url
-        value: "$ARGOFLOW_OIDC_ISSUER/keys"
+        value: "<< domain.auth >>.<< domain.root >>/keys"
       - name: extraArgs.redeem-url
-        value: "$ARGOFLOW_OIDC_ISSUER/token"
+        value: "<< domain.auth >>.<< domain.root >>/token"
       - name: extraArgs.skip-oidc-discovery
         value: "true"

@@ -8,16 +8,16 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
-    - $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
+    - << domain.dashboard >>.<< domain.root >>
     port:
       name: http
       number: 80
       protocol: HTTP
     # Upgrade HTTP to HTTPS
-    #tls:
-    #  httpsRedirect: true
+    tls:
+      httpsRedirect: true
   - hosts:
-    - $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
+    - << domain.dashboard >>.<< domain.root >>
     port:
       name: https
       number: 443

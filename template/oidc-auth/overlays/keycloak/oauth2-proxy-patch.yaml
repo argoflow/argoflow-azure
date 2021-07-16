@@ -40,17 +40,17 @@ spec:
       - name: extraArgs.skip-provider-button
         value: "true"
       - name: extraArgs.cookie-domain
-        value: .$ARGOFLOW_DOMAIN
+        value: .<< domain.root >>
       - name: extraArgs.whitelist-domain
-        value: .$ARGOFLOW_DOMAIN
+        value: .<< domain.root >>
       - name: extraArgs.login-url
-        value: "$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/auth"
+        value: "<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/auth"
       - name: extraArgs.redeem-url
-        value: "$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/token"
+        value: "<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/token"
       - name: extraArgs.profile-url
-        value: "$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/userinfo"
+        value: "<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/userinfo"
       - name: extraArgs.validate-url
-        value: "$ARGOFLOW_OIDC_ISSUER/auth/realms/kubeflow/protocol/openid-connect/userinfo"
+        value: "<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/userinfo"
       - name: extraArgs.scope
         value: email
       - name: extraArgs.scope

@@ -1,4 +1,4 @@
-issuer: https://$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_DOMAIN
+issuer: https://<< domain.auth >>.<< domain.root >>
 storage:
   type: kubernetes
   config:
@@ -15,16 +15,16 @@ expiry:
   idTokens: "1h"
 enablePasswordDB: true
 staticPasswords:
-- email:
-  hash:
+- email: << profile.email >>
+  hash: << dex.admin_pass_dex >>
   # https://github.com/dexidp/dex/pull/1601/commits
   # FIXME: Use hashFromEnv instead
-  username:
+  username: << profile.username >>
   userID: "15841185641784"
 staticClients:
 # https://github.com/dexidp/dex/pull/1664
-- id: $ARGOFLOW_DEX_CLIENT_ID
+- id: << oidc.oidc_client_id >>
   redirectURIs:
-  - "https://$ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN/oauth2/callback"
+  - "https://<< domain.dashboard >>.<< domain.root >>/oauth2/callback"
   name: 'Dex Login Application'
-  secret: $ARGOFLOW_DEX_CLIENT_SECRET
+  secret: << oidc.oidc_client_secret >>

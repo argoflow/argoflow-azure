@@ -1,0 +1,31 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: monitoring-gateway
+  namespace: monitoring
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - grafana.aaw.cloud.statcan.ca
+    - kiali.aaw.cloud.statcan.ca
+    - kubecost.aaw.cloud.statcan.ca
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    # Upgrade HTTP to HTTPS
+    tls:
+      httpsRedirect: true
+  - hosts:
+    - grafana.aaw.cloud.statcan.ca
+    - kiali.aaw.cloud.statcan.ca
+    - kubecost.aaw.cloud.statcan.ca
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: monitoring-ingressgateway-certs

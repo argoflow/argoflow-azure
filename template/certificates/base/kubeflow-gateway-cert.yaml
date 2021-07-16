@@ -8,6 +8,6 @@ spec:
   issuerRef:
     name: gateways-issuer
     kind: ClusterIssuer
-  commonName: $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
+  commonName: << domain.dashboard >>.<< domain.root >>
   dnsNames:
-    - $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
+    - << domain.dashboard >>.<< domain.root >>

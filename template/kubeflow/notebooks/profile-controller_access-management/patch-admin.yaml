@@ -4,4 +4,4 @@ metadata:
   name: profiles-config
   namespace: kubeflow
 data:
-  ADMIN: "$ARGOFLOW_EMAIL"
+  ADMIN: "<< git_repo.url >>"

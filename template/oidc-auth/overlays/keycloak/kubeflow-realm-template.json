@@ -8,14 +8,14 @@
     "requiredCredentials": [ "password" ],
     "users" : [
         {
-            "username" : "$ARGOFLOW_USERNAME",
+            "username" : "<< profile.username >>",
             "enabled": true,
-            "email" : "$ARGOFLOW_EMAIL",
-            "firstName": "$ARGOFLOW_FIRSTNAME",
-            "lastName": "$ARGOFLOW_LASTNAME",
+            "email" : "<< git_repo.url >>",
+            "firstName": "<< profile.firstname >>",
+            "lastName": "<< profile.lastname >>",
             "credentials" : [
                 { "type" : "password",
-                  "value" : "$ARGOFLOW_ADMIN_PASS" }
+                  "value" : "<< profile.password >>" }
             ],
             "realmRoles": [ "user" ],
             "clientRoles": {
@@ -66,16 +66,16 @@
     "clients": [
         {
             "id": "56185130-63f4-441f-b618-f471e7baac6d",
-            "clientId": "$ARGOFLOW_OIDC_CLIENT_ID",
+            "clientId": "<< oidc.oidc_client_id >>",
             "name": "Oauth2 Proxy",
             "surrogateAuthRequired": false,
             "enabled": true,
             "alwaysDisplayInConsole": false,
             "clientAuthenticatorType": "client-secret",
-            "secret": "$ARGOFLOW_OIDC_CLIENT_SECRET",
+            "secret": "<< oidc.oidc_client_secret >>",
             "redirectUris": [
-                "https://$ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN",
-                "https://$ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN/oauth2/callback"
+                "https://<< domain.dashboard >>.<< domain.root >>",
+                "https://<< domain.dashboard >>.<< domain.root >>/oauth2/callback"
             ],
             "webOrigins": []
         }

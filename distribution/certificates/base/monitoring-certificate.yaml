@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: monitoring-ingressgateway-certs
+  namespace: istio-system
+spec:
+  secretName: monitoring-ingressgateway-certs
+  issuerRef:
+    name: gateways-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - grafana.aaw.cloud.statcan.ca
+    - kiali.aaw.cloud.statcan.ca
+    - kubecost.aaw.cloud.statcan.ca

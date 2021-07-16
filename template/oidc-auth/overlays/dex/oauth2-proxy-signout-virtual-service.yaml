@@ -7,7 +7,7 @@ spec:
   gateways:
   - kubeflow/kubeflow-gateway
   hosts:
-  - $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
+  - << domain.dashboard >>.<< domain.root >>
   http:
   - match:
     - uri:

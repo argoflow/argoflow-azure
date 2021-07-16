@@ -6,14 +6,14 @@ spec:
   selfSigned:
     $patch: delete
   acme:
-    email: $ARGOFLOW_CERT_MANAGER_EMAIL_USER@$ARGOFLOW_CERT_MANAGER_EMAIL_DOMAIN
-    server: $ARGOFLOW_CERT_MANAGER_SERVER
+    email: << cert_manager.email_user >>@<< cert_manager.email_domain >>
+    server: << cert_manager.server >>
     privateKeySecretRef:
       name: gateways-issuer-account-key
     solvers:
     - dns01:
         cloudflare:
-          email: $ARGOFLOW_CLOUDFLARE_EMAIL
+          email: << cloudflare.email >>
           apiTokenSecretRef:
             name: cloudflare-api-token-secret
             key: api-token

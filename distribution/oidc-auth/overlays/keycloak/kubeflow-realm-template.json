@@ -1,0 +1,83 @@
+{
+    "id": "kubeflow",
+    "realm": "kubeflow",
+    "displayName": "Kubeflow Realm",
+    "enabled": true,
+    "sslRequired": "external",
+    "registrationAllowed": false,
+    "requiredCredentials": [ "password" ],
+    "users" : [
+        {
+            "username" : "<< profile.username >>",
+            "enabled": true,
+            "email" : "http://gitserver.git/argoflow-azure.git",
+            "firstName": "<< profile.firstname >>",
+            "lastName": "<< profile.lastname >>",
+            "credentials" : [
+                { "type" : "password",
+                  "value" : "<< profile.password >>" }
+            ],
+            "realmRoles": [ "user" ],
+            "clientRoles": {
+                "account": ["view-profile", "manage-account"]
+            }
+        }
+    ],
+    "roles" : {
+        "realm" : [
+            {
+                "name": "user",
+                "description": "User privileges",
+                "composite": true,
+                "composites": {
+                "realm": [
+                    "offline_access",
+                    "uma_authorization"
+                ],
+                "client": {
+                    "account": [
+                    "manage-account",
+                    "view-profile"
+                    ]
+                }
+                },
+                "clientRole": false,
+                "containerId": "kubeflow",
+                "attributes": {}
+            },
+            {
+                "name": "uma_authorization",
+                "description": "${role_uma_authorization}",
+                "composite": false,
+                "clientRole": false,
+                "containerId": "kubeflow",
+                "attributes": {}
+              },
+              {
+                "name": "offline_access",
+                "description": "${role_offline-access}",
+                "composite": false,
+                "clientRole": false,
+                "containerId": "kubeflow",
+                "attributes": {}
+              }
+        ]
+    },
+    "clients": [
+        {
+            "id": "56185130-63f4-441f-b618-f471e7baac6d",
+            "clientId": "<< oidc.oidc_client_id >>",
+            "name": "Oauth2 Proxy",
+            "surrogateAuthRequired": false,
+            "enabled": true,
+            "alwaysDisplayInConsole": false,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "<< oidc.oidc_client_secret >>",
+            "redirectUris": [
+                "https://kubeflow.aaw.cloud.statcan.ca",
+                "https://kubeflow.aaw.cloud.statcan.ca/oauth2/callback"
+            ],
+            "webOrigins": []
+        }
+    ]
+}

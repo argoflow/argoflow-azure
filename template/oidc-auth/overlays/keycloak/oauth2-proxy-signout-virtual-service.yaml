@@ -7,7 +7,7 @@ spec:
   gateways:
   - kubeflow/kubeflow-gateway
   hosts:
-  - $ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN
+  - << domain.dashboard >>.<< domain.root >>
   http:
   - match:
     - uri:
@@ -22,4 +22,4 @@ spec:
     headers:
       request:
         set:
-          X-Auth-Request-Redirect: "https://$ARGOFLOW_SUBDOMAIN_AUTH.$ARGOFLOW_DOMAIN/auth/realms/kubeflow/protocol/openid-connect/logout?redirect_uri=https%%3A%%2F%%2F$ARGOFLOW_SUBDOMAIN_DASHBOARD.$ARGOFLOW_DOMAIN"
+          X-Auth-Request-Redirect: "https://<< domain.auth >>.<< domain.root >>/auth/realms/kubeflow/protocol/openid-connect/logout?redirect_uri=https%%3A%%2F%%2F<< domain.dashboard >>.<< domain.root >>"

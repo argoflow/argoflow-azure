@@ -1,0 +1,30 @@
+issuer: https://auth.aaw.cloud.statcan.ca
+storage:
+  type: kubernetes
+  config:
+    inCluster: true
+web:
+  http: 0.0.0.0:5556
+logger:
+  level: "debug"
+  format: text
+oauth2:
+  skipApprovalScreen: true
+expiry:
+  signingKeys: "4h"
+  idTokens: "1h"
+enablePasswordDB: true
+staticPasswords:
+- email: << profile.email >>
+  hash: << dex.admin_pass_dex >>
+  # https://github.com/dexidp/dex/pull/1601/commits
+  # FIXME: Use hashFromEnv instead
+  username: << profile.username >>
+  userID: "15841185641784"
+staticClients:
+# https://github.com/dexidp/dex/pull/1664
+- id: << oidc.oidc_client_id >>
+  redirectURIs:
+  - "https://kubeflow.aaw.cloud.statcan.ca/oauth2/callback"
+  name: 'Dex Login Application'
+  secret: << oidc.oidc_client_secret >>
