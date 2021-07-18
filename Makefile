@@ -184,7 +184,7 @@ kind:
 
 ### Local git server,
 ### For private ArgoCD in kind
-gitserver: $(DISTRIBUTION) secrets
+gitserver:
 	docker build . -t gitserver:latest -f kind/gitserver.Dockerfile
 	kind load docker-image gitserver:latest --name $(KIND_NAME)
 
