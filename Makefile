@@ -233,6 +233,11 @@ get-etc-hosts:
 deploy-kubeflow: $(DISTRIBUTION)
 	kubectl apply -f $(DISTRIBUTION)/kubeflow.yaml
 
+custom-images:
+	az acr login --name k8scc01covidacr
+	grep -v '^ *#' kind/custom-images | xargs -I{} docker pull {} || true
+	grep -v '^ *#' kind/custom-images | xargs -I{} kind load docker-image {} --name $(KIND_NAME) || true
+
 deploy: kind gitserver deploy-argocd deploy-kubeflow deploy-metallb
 	sleep 30
 	@while kubectl get svc --all-namespaces | grep -q '<pending>'; do \

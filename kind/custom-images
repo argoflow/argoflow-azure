@@ -1,0 +1,4 @@
+# These are Statcan specific images.
+# Everything in this file will get `docker pull`d
+# and then `kind load`d
+k8scc01covidacr.azurecr.io/kubeflow-pipeline/kubeflow-pipeline:bc736776c29e0a60df9bad619dd78cba879dd3d7
