@@ -29,6 +29,7 @@ resources:
 ## Kubeflow  
 - argocd-applications/central-dashboard.yaml
 - argocd-applications/profile-controller_access-management.yaml
+- argocd-applications/profiles.yaml
 - argocd-applications/kubeflow-namespace.yaml
 - argocd-applications/kubeflow-roles.yaml
 - argocd-applications/pipelines.yaml

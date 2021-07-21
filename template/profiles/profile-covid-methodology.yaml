@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: covid-methodology
+spec:
+  owner:
+    kind: User
+    name: kenneth.chu@cloud.statcan.ca

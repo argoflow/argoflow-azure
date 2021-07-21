@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: aaw-sedar
+spec:
+  owner:
+    kind: User
+    name: anurag.bejju2@cloud.statcan.ca

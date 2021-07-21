@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - github.com/kubeflow/kubeflow/components/centraldashboard/manifests/overlays/istio?ref=8901e3af3b83f599b89562162cdb2854f57082d3 # tag=v1.3.0-rc.1
+- links-configmap.yaml
 
 patchesStrategicMerge:
 - enable-registration-flow.yaml

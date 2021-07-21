@@ -233,6 +233,15 @@ get-etc-hosts:
 deploy-kubeflow: $(DISTRIBUTION)
 	kubectl apply -f $(DISTRIBUTION)/kubeflow.yaml
 
+kubeflow-images:
+	az acr login --name k8scc01covidacr
+	yq e '.spawnerFormDefaults.image.options[]' \
+		distribution/kubeflow/notebooks/jupyter-web-app/configs/spawner_ui_config.yaml \
+		| xargs -I{} docker pull {} || true
+	yq e '.spawnerFormDefaults.image.options[]' \
+		distribution/kubeflow/notebooks/jupyter-web-app/configs/spawner_ui_config.yaml \
+		| xargs -I{} kind load docker-image {} --name $(KIND_NAME) || true
+
 custom-images:
 	az acr login --name k8scc01covidacr
 	grep -v '^ *#' kind/custom-images | xargs -I{} docker pull {} || true

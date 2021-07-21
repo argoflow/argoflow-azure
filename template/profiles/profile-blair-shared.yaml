@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: blair-shared
+spec:
+  owner:
+    kind: User
+    name: blair.drummond@cloud.statcan.ca

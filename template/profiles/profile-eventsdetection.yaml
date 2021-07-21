@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: eventsdetection
+spec:
+  owner:
+    kind: User
+    name: krishna.chaitanya.gopaluni@cloud.statcan.ca

@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: aaw-capex
+spec:
+  owner:
+    kind: User
+    name: anurag.bejju2@cloud.statcan.ca

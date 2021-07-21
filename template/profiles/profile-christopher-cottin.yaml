@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1
+kind: Profile
+metadata:
+  name: christopher-cottin
+spec:
+  owner:
+    kind: User
+    name: christopher.cottin@statcan.gc.ca
