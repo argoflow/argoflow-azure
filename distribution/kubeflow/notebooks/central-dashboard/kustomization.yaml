@@ -10,7 +10,3 @@ patchesStrategicMerge:
 - deployment.yaml
 - deployment_patch.yaml
 
-# images:
-# - name: public.ecr.aws/j1r0q0g6/notebooks/central-dashboard
-#   newName: k8scc01covidacr.azurecr.io/kubeflow/centraldashboard
-#   newTag: a96d1cd8523f895904051e122fa98db5c0017bd6

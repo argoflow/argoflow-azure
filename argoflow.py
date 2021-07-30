@@ -164,6 +164,12 @@ class CloudFlare(BaseSettings):
         env_prefix = 'ARGOFLOW_CLOUDFLARE_'
 
 
+class Minio(BaseSettings):
+    size: str = '200Gi'
+
+    class Config:
+        env_prefix = 'ARGOFLOW_MINIO_'
+
 
 
 
@@ -223,6 +229,7 @@ if __name__ == '__main__':
         'domain': Domain,
         'cert_manager': CertManager,
         'cloudflare': CloudFlare,
+        'minio': Minio,
         # These are TODO
         'rds': Dummy,
         's3': Dummy,

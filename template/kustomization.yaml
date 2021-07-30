@@ -29,7 +29,6 @@ resources:
 ## Kubeflow  
 - argocd-applications/central-dashboard.yaml
 - argocd-applications/profile-controller_access-management.yaml
-- argocd-applications/profiles.yaml
 - argocd-applications/kubeflow-namespace.yaml
 - argocd-applications/kubeflow-roles.yaml
 - argocd-applications/pipelines.yaml
@@ -38,6 +37,7 @@ resources:
 - argocd-applications/pod-defaults.yaml
 - argocd-applications/jupyter-web-app.yaml
 - argocd-applications/notebook-controller.yaml
+- argocd-applications/prob-notebook-controller.yaml
 - argocd-applications/tensorboard-controller.yaml
 - argocd-applications/tensorboards-web-app.yaml
 - argocd-applications/volumes-web-app.yaml

@@ -1,8 +1,0 @@
-apiVersion: kubeflow.org/v1
-kind: Profile
-metadata:
-  name: nserc-analysis
-spec:
-  owner:
-    kind: User
-    name: ellen.gute@nserc-crsng.gc.ca

@@ -1,8 +1,0 @@
-apiVersion: kubeflow.org/v1
-kind: Profile
-metadata:
-  name: kbf-ns-ym
-spec:
-  owner:
-    kind: User
-    name: yimei.zhang@cloud.statcan.ca

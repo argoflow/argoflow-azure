@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notebook-auth-policy-checker
+  namespace: kubeflow
+  labels:
+    apps.kubernetes.io/name: notebook-auth-policy-checker
+spec:
+  selector:
+    matchLabels:
+      apps.kubernetes.io/name: notebook-auth-policy-checker
+  template:
+    metadata:
+      labels:
+        apps.kubernetes.io/name: notebook-auth-policy-checker
+      annotations:
+        sidecar.istio.io/inject: 'false'
+    spec:
+      serviceAccountName: notebook-auth-policy-checker
+      imagePullSecrets:
+        - name: k8scc01covidacr-registry-connection
+      containers:
+      - name: notebook-auth-policy-checker
+        imagePullPolicy: IfNotPresent
+        image: k8scc01covidacr.azurecr.io/prob-notebook-controller:latest
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"

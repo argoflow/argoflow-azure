@@ -1,8 +1,0 @@
-apiVersion: kubeflow.org/v1
-kind: Profile
-metadata:
-  name: hilbert-space
-spec:
-  owner:
-    kind: User
-    name: zachary.zanussi@cloud.statcan.ca
