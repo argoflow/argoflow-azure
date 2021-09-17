@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: http://gitserver.git/argoflow-azure.git
     targetRevision: master
-    path: distribution/profiles
+    path: distribution/kubeflow/profiles
   syncPolicy:
     automated:
       prune: true

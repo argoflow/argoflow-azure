@@ -6,6 +6,7 @@ resources:
 
 patchesStrategicMerge:
   - patch-admin.yaml
+  - deployment.yaml
 
 images:
 - name: public.ecr.aws/j1r0q0g6/notebooks/access-management
@@ -14,3 +15,6 @@ images:
 - name: public.ecr.aws/j1r0q0g6/notebooks/profile-controller
   newName: public.ecr.aws/j1r0q0g6/notebooks/profile-controller
   newTag: v1.3.0-rc.1
+- name: gcr.io/kubeflow-images-public/kfam
+  newName: k8scc01covidacr.azurecr.io/kfam
+  newTag: latest
