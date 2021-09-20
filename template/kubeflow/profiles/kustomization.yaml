@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: kubeflow
 
 resources:
-- github.com/kubeflow/manifests/common/user-namespace/base
+- github.com/kubeflow/manifests/common/user-namespace/base?ref=2f76822b03bbf539292d23ca1928a335950bdb9e #v1.3
