@@ -47,7 +47,7 @@ resources:
 # - argocd-applications/tensorboard-controller.yaml
 # - argocd-applications/tensorboards-web-app.yaml
 # - argocd-applications/volumes-web-app.yaml
-# - argocd-applications/tensorflow-operator.yaml
+- argocd-applications/tensorflow-operator.yaml
 # - argocd-applications/pytorch-operator.yaml
 # - argocd-applications/mpi-operator.yaml
 # - argocd-applications/mxnet-operator.yaml
