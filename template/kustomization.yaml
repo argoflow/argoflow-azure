@@ -51,6 +51,7 @@ resources:
 - argocd-applications/mpi-operator.yaml
 - argocd-applications/mxnet-operator.yaml
 - argocd-applications/xgboost-operator.yaml
+#- argocd-applications/spark-operator.yaml
 
 ## System
 # - argocd-applications/external-dns.yaml
