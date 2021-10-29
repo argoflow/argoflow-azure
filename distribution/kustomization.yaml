@@ -43,6 +43,7 @@ resources:
 - argocd-applications/jupyter-web-app.yaml
 - argocd-applications/notebook-controller.yaml
 - argocd-applications/prob-notebook-controller.yaml
+#- argocd-applications/spark-operator.yaml
 
 # - argocd-applications/tensorboard-controller.yaml
 # - argocd-applications/tensorboards-web-app.yaml

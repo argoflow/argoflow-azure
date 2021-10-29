@@ -1,0 +1,5 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- github.com/kubeflow/manifests/contrib/spark/spark-operator/overlays/application?ref=a62416972ff4cbd87ab2c19659994cf5be5c0e24 # tag=v1.3.0
