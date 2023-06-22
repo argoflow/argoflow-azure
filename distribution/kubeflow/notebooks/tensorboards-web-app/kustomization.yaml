@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-- github.com/kubeflow/kubeflow/components/crud-web-apps/tensorboards/manifests/overlays/istio?ref=8901e3af3b83f599b89562162cdb2854f57082d3 # tag=v1.3.0-rc.1
+- github.com/kubeflow/kubeflow/components/crud-web-apps/tensorboards/manifests/overlays/istio?ref=cce5c88047815c45df8a52c8592e5890ae1b1949 # tag=v1.7.0
 
 images:
 - name: public.ecr.aws/j1r0q0g6/notebooks/tensorboards-web-app
